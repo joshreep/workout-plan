@@ -1,0 +1,26 @@
+.card {
+  background: #16161c;
+  border: 1px solid #2a2a30;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.body {
+  color: #999;
+  font-size: 13px;
+  line-height: 1.6;
+}

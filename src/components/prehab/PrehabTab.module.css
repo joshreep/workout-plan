@@ -1,0 +1,85 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.intro {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.highlight {
+  color: #f0ede8;
+}
+
+.section {
+  margin-bottom: 28px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sectionBar {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.sectionSubtitle {
+  color: #888;
+  font-size: 12px;
+  margin-bottom: 14px;
+  margin-top: -8px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tip {
+  background: #1a1f1a;
+  border: 1px solid #3aca6e44;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+}
+
+.tipLabel {
+  font-size: 11px;
+  color: #5df094;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tipText {
+  color: #bbb;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.7;
+}

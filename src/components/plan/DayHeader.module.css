@@ -1,0 +1,59 @@
+.header {
+  border: 1px solid;
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.name {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.subtitle {
+  color: #aaa;
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.progressWrap {
+  text-align: right;
+}
+
+.progressLabel {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.progressValue {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.bar {
+  height: 4px;
+  background: #2a2a30;
+  border-radius: 2px;
+  margin-top: 14px;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.setCount {
+  font-size: 11px;
+  color: #666;
+  margin-top: 6px;
+}

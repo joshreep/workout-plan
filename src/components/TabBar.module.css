@@ -1,0 +1,26 @@
+.tabBar {
+  display: flex;
+  border-bottom: 1px solid #2a2a30;
+  background: #111113;
+  overflow-x: auto;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: #666;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab.active {
+  color: #fff;
+  font-weight: 700;
+}

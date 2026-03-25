@@ -1,0 +1,5 @@
+agent-state/
+node_modules/
+dist/
+dev-dist/
+*.local

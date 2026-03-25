@@ -1,0 +1,35 @@
+.timeline {
+  margin-top: 24px;
+  background: #16161c;
+  border: 1px solid #2a2a30;
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.label {
+  font-size: 11px;
+  color: #888;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 14px;
+}
+
+.week {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e8a83a;
+  min-width: 80px;
+  padding-top: 1px;
+}
+
+.note {
+  font-size: 13px;
+  color: #999;
+  line-height: 1.5;
+}

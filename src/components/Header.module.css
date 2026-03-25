@@ -1,0 +1,38 @@
+.header {
+  background: linear-gradient(135deg, #141416 0%, #1a1a1f 100%);
+  border-bottom: 1px solid #2a2a30;
+  padding: 28px 24px 20px;
+}
+
+.inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 13px;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.saved {
+  color: #3aca6e;
+  margin-left: 10px;
+}
