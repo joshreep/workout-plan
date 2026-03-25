@@ -56,6 +56,7 @@ export default function SetLogger({
             <div className={styles.fieldLabel}>Weight (lbs)</div>
             <input
               type="number"
+              inputMode="decimal"
               placeholder={last?.weight || '0'}
               value={draft.weight}
               onChange={(e) => onUpdateDraft('weight', e.target.value)}
@@ -66,6 +67,7 @@ export default function SetLogger({
             <div className={styles.fieldLabel}>Reps Done</div>
             <input
               type="number"
+              inputMode="decimal"
               placeholder={last?.reps || '0'}
               value={draft.reps}
               onChange={(e) => onUpdateDraft('reps', e.target.value)}
