@@ -242,25 +242,26 @@ export const days: Day[] = [
           'https://www.youtube.com/results?search_query=bulgarian+split+squat+proper+form+tutorial',
       },
       {
-        name: 'Ab Wheel Rollout',
+        name: 'Superset: Dead Bug + Cable Woodchop',
         sets: 3,
-        reps: '8\u201312',
+        reps: '10 each side + 12 each side',
         rest: '60 sec',
-        muscle: 'Core',
-        notes: "Brace core like you're about to get punched. Don't let hips sag.",
+        muscle: 'Core / Obliques',
+        notes:
+          'Do dead bugs first (anti-extension), then woodchops (rotation) back-to-back with no rest between. Dead bug: lie on back, extend opposite arm and leg keeping lower back pressed to floor. Woodchop: pull cable high to low, keep hips square.',
         videoUrl:
-          'https://www.youtube.com/results?search_query=ab+wheel+rollout+proper+form+tutorial',
+          'https://www.youtube.com/results?search_query=dead+bug+exercise+proper+form+tutorial',
       },
       {
-        name: 'Cable Woodchop (High to Low)',
+        name: 'Standing Calf Raise',
         sets: 3,
-        reps: '12 each side',
+        reps: '15',
         rest: '60 sec',
-        muscle: 'Obliques / Core',
+        muscle: 'Calves',
         notes:
-          'Rotational movement targeting obliques \u2014 the muscles that cinch your waistline. Keep hips square.',
+          'Full range of motion \u2014 all the way up, slow 3 sec lower. Complements flat feet prehab work by strengthening the tibialis posterior.',
         videoUrl:
-          'https://www.youtube.com/results?search_query=cable+woodchop+high+to+low+proper+form+tutorial',
+          'https://www.youtube.com/results?search_query=standing+calf+raise+proper+form+tutorial',
       },
     ],
   },
