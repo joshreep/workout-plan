@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import type { Draft, LogEntry } from '../../types';
 import styles from './SetLogger.module.css';
 
@@ -25,8 +24,6 @@ export default function SetLogger({
   onUpdateDraft,
   onLogSet,
 }: SetLoggerProps) {
-  const repsRef = useRef<HTMLInputElement>(null);
-
   return (
     <div
       className={styles.set}
@@ -60,36 +57,20 @@ export default function SetLogger({
             <input
               type="number"
               inputMode="decimal"
-              enterKeyHint="next"
               placeholder={last?.weight || '0'}
               value={draft.weight}
               onChange={(e) => onUpdateDraft('weight', e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  repsRef.current?.focus();
-                }
-              }}
               className={styles.input}
             />
           </div>
           <div className={styles.field}>
             <div className={styles.fieldLabel}>Reps Done</div>
             <input
-              ref={repsRef}
               type="number"
-              inputMode="decimal"
-              enterKeyHint="done"
+              inputMode="numeric"
               placeholder={last?.reps || '0'}
               value={draft.reps}
               onChange={(e) => onUpdateDraft('reps', e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  repsRef.current?.blur();
-                  onLogSet();
-                }
-              }}
               className={styles.input}
             />
           </div>
