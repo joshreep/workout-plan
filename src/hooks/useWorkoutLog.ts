@@ -1,15 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
-import { loadLog, saveLog } from '../lib/storage';
-import type { Day, Draft, WorkoutLog } from '../types';
+import { appendEntry, loadHistory, saveHistory } from '../lib/storage';
+import type { Day, Draft, HistoryEntry, LogEntry, WorkoutLogV2 } from '../types';
+
+function historyToLogEntry(entry: HistoryEntry): LogEntry {
+  const d = new Date(entry.timestamp);
+  const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return { weight: entry.weight, reps: entry.reps, date };
+}
 
 export function useWorkoutLog(activeDay: number, day: Day) {
   const [completedSets, setCompletedSets] = useState<Record<string, boolean>>({});
-  const [log, setLog] = useState<WorkoutLog>({});
+  const [log, setLog] = useState<WorkoutLogV2>({});
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
-    setLog(loadLog());
+    setLog(loadHistory());
     setStorageReady(true);
   }, []);
 
@@ -29,7 +35,11 @@ export function useWorkoutLog(activeDay: number, day: Day) {
   );
 
   const lastEntry = useCallback(
-    (exIdx: number, setIdx: number) => log[setKey(exIdx, setIdx)] ?? null,
+    (exIdx: number, setIdx: number): LogEntry | null => {
+      const entries = log[setKey(exIdx, setIdx)];
+      if (!entries || entries.length === 0) return null;
+      return historyToLogEntry(entries[entries.length - 1]);
+    },
     [log, setKey],
   );
 
@@ -68,42 +78,74 @@ export function useWorkoutLog(activeDay: number, day: Day) {
   );
 
   const lastMovEntry = useCallback(
-    (exIdx: number, setIdx: number, movIdx: number) =>
-      log[movKey(exIdx, setIdx, movIdx)] ?? log[setKey(exIdx, setIdx)] ?? null,
+    (exIdx: number, setIdx: number, movIdx: number): LogEntry | null => {
+      const movEntries = log[movKey(exIdx, setIdx, movIdx)];
+      if (movEntries && movEntries.length > 0) {
+        return historyToLogEntry(movEntries[movEntries.length - 1]);
+      }
+      const flatEntries = log[setKey(exIdx, setIdx)];
+      if (flatEntries && flatEntries.length > 0) {
+        return historyToLogEntry(flatEntries[flatEntries.length - 1]);
+      }
+      return null;
+    },
     [log, movKey, setKey],
   );
 
   const logSet = useCallback(
     (exIdx: number, setIdx: number) => {
       const ex = day.exercises[exIdx];
-      const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const timestamp = new Date().toISOString();
       if (ex.movements) {
         const anyFilled = ex.movements.some((_, mIdx) => {
           const d = drafts[movKey(exIdx, setIdx, mIdx)];
           return d?.weight || d?.reps;
         });
         if (!anyFilled) return;
-        const newLog = { ...log };
+        let newLog = { ...log };
         ex.movements.forEach((_, mIdx) => {
           const k = movKey(exIdx, setIdx, mIdx);
           const draft = drafts[k] ?? { weight: '', reps: '' };
-          newLog[k] = { weight: draft.weight || '', reps: draft.reps || '', date };
+          const entry: HistoryEntry = {
+            weight: draft.weight || '',
+            reps: draft.reps || '',
+            timestamp,
+          };
+          newLog = appendEntry(newLog, k, entry);
         });
         setLog(newLog);
-        saveLog(newLog);
+        saveHistory(newLog);
         setCompletedSets((prev) => ({ ...prev, [setKey(exIdx, setIdx)]: true }));
       } else {
         const k = setKey(exIdx, setIdx);
         const draft = drafts[k];
         if (!draft?.weight && !draft?.reps) return;
-        const entry = { weight: draft.weight || '', reps: draft.reps || '', date };
-        const newLog = { ...log, [k]: entry };
+        const entry: HistoryEntry = {
+          weight: draft.weight || '',
+          reps: draft.reps || '',
+          timestamp,
+        };
+        const newLog = appendEntry(log, k, entry);
         setLog(newLog);
-        saveLog(newLog);
+        saveHistory(newLog);
         setCompletedSets((prev) => ({ ...prev, [k]: true }));
       }
     },
     [drafts, log, day.exercises, setKey, movKey],
+  );
+
+  const getHistory = useCallback(
+    (exIdx: number, setIdx = 0): HistoryEntry[] => {
+      return log[setKey(exIdx, setIdx)] ?? [];
+    },
+    [log, setKey],
+  );
+
+  const getMovHistory = useCallback(
+    (exIdx: number, setIdx: number, movIdx: number): HistoryEntry[] => {
+      return log[movKey(exIdx, setIdx, movIdx)] ?? [];
+    },
+    [log, movKey],
   );
 
   const totalSets = day.exercises.reduce((acc, ex) => acc + ex.sets, 0);
@@ -135,5 +177,7 @@ export function useWorkoutLog(activeDay: number, day: Day) {
     progress,
     setKey,
     movKey,
+    getHistory,
+    getMovHistory,
   };
 }

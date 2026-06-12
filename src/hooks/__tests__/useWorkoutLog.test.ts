@@ -80,7 +80,7 @@ describe('useWorkoutLog', () => {
     expect(result.current.progress).toBe(33);
   });
 
-  it('persists logged sets to localStorage', () => {
+  it('persists logged sets to localStorage v2', () => {
     const { result } = renderHook(() => useWorkoutLog(0, mockDay));
 
     act(() => {
@@ -92,10 +92,12 @@ describe('useWorkoutLog', () => {
       result.current.logSet(0, 0);
     });
 
-    const stored = JSON.parse(localStorage.getItem('workout-log-v1')!);
+    const stored = JSON.parse(localStorage.getItem('workout-log-v2')!);
     expect(stored['0-0-0']).toBeDefined();
-    expect(stored['0-0-0'].weight).toBe('135');
-    expect(stored['0-0-0'].reps).toBe('8');
+    expect(stored['0-0-0']).toHaveLength(1);
+    expect(stored['0-0-0'][0].weight).toBe('135');
+    expect(stored['0-0-0'][0].reps).toBe('8');
+    expect(stored['0-0-0'][0].timestamp).toBeDefined();
   });
 
   it('does not log set when draft is empty', () => {
@@ -108,11 +110,36 @@ describe('useWorkoutLog', () => {
     expect(result.current.isSetDone(0, 0)).toBe(false);
   });
 
-  it('loads existing data from localStorage', () => {
+  it('migrates v1 data and returns it via lastEntry', () => {
     const existingData = { '0-0-0': { weight: '200', reps: '5', date: 'Mar 20' } };
     localStorage.setItem('workout-log-v1', JSON.stringify(existingData));
 
     const { result } = renderHook(() => useWorkoutLog(0, mockDay));
-    expect(result.current.lastEntry(0, 0)).toEqual(existingData['0-0-0']);
+    const entry = result.current.lastEntry(0, 0);
+    expect(entry).not.toBeNull();
+    expect(entry!.weight).toBe('200');
+    expect(entry!.reps).toBe('5');
+    expect(entry!.date).toContain('Mar');
+  });
+
+  it('accumulates history entries on multiple logSet calls', () => {
+    const { result } = renderHook(() => useWorkoutLog(0, mockDay));
+
+    act(() => {
+      result.current.updateDraft(0, 0, 'weight', '135');
+      result.current.updateDraft(0, 0, 'reps', '8');
+    });
+    act(() => {
+      result.current.logSet(0, 0);
+    });
+
+    const history = result.current.getHistory(0, 0);
+    expect(history).toHaveLength(1);
+    expect(history[0].weight).toBe('135');
+  });
+
+  it('getHistory returns empty array when no data', () => {
+    const { result } = renderHook(() => useWorkoutLog(0, mockDay));
+    expect(result.current.getHistory(0, 0)).toEqual([]);
   });
 });

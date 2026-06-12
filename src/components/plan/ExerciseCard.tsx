@@ -1,4 +1,6 @@
-import type { Day, Draft, Exercise, LogEntry, WorkoutLog } from '../../types';
+import { useState } from 'react';
+import type { Day, Draft, Exercise, HistoryEntry, LogEntry, WorkoutLogV2 } from '../../types';
+import ProgressChart from './ProgressChart';
 import SetLogger from './SetLogger';
 import SupersetSetLogger from './SupersetSetLogger';
 import styles from './ExerciseCard.module.css';
@@ -17,9 +19,11 @@ interface ExerciseCardProps {
   updateMovDraft: (exIdx: number, setIdx: number, movIdx: number, field: keyof Draft, value: string) => void;
   lastMovEntry: (exIdx: number, setIdx: number, movIdx: number) => LogEntry | null;
   logSet: (exIdx: number, setIdx: number) => void;
-  log: WorkoutLog;
+  log: WorkoutLogV2;
   movKey: (exIdx: number, setIdx: number, movIdx: number) => string;
   getLogEntry: (exIdx: number, setIdx: number) => LogEntry | undefined;
+  getHistory: (exIdx: number, setIdx?: number) => HistoryEntry[];
+  getMovHistory: (exIdx: number, setIdx: number, movIdx: number) => HistoryEntry[];
 }
 
 export default function ExerciseCard({
@@ -39,7 +43,10 @@ export default function ExerciseCard({
   log,
   movKey,
   getLogEntry,
+  getHistory,
+  getMovHistory,
 }: ExerciseCardProps) {
+  const [showProgress, setShowProgress] = useState(false);
   const allDone = Array.from({ length: ex.sets }, (_, i) => isSetDone(exIdx, i)).every(Boolean);
 
   return (
@@ -85,7 +92,12 @@ export default function ExerciseCard({
                     done={isSetDone(exIdx, setIdx)}
                     drafts={ex.movements.map((_, mIdx) => getMovDraft(exIdx, setIdx, mIdx))}
                     lasts={ex.movements.map((_, mIdx) => lastMovEntry(exIdx, setIdx, mIdx))}
-                    logEntries={ex.movements.map((_, mIdx) => log[movKey(exIdx, setIdx, mIdx)])}
+                    logEntries={ex.movements.map((_, mIdx) => {
+                      const entries = log[movKey(exIdx, setIdx, mIdx)];
+                      if (!entries || entries.length === 0) return undefined;
+                      const last = entries[entries.length - 1];
+                      return { weight: last.weight, reps: last.reps, date: '' };
+                    })}
                     color={day.color}
                     accent={day.accent}
                     onUpdateMovDraft={(mIdx, field, value) =>
@@ -110,6 +122,34 @@ export default function ExerciseCard({
               )}
             </div>
           </div>
+
+          <button
+            className={styles.progressBtn}
+            style={{ color: day.accent, borderColor: `${day.color}44` }}
+            onClick={() => setShowProgress(!showProgress)}
+          >
+            {showProgress ? 'Hide Progress' : 'View Progress'}
+          </button>
+
+          {showProgress && (
+            <div className={styles.progressSection}>
+              {ex.movements ? (
+                ex.movements.map((mov, mIdx) => (
+                  <ProgressChart
+                    key={mIdx}
+                    entries={getMovHistory(exIdx, 0, mIdx)}
+                    color={day.color}
+                    label={mov.name}
+                  />
+                ))
+              ) : (
+                <ProgressChart
+                  entries={getHistory(exIdx, 0)}
+                  color={day.color}
+                />
+              )}
+            </div>
+          )}
 
           <a
             href={ex.videoUrl}

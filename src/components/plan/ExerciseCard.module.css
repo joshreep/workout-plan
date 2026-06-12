@@ -84,6 +84,26 @@
   gap: 10px;
 }
 
+.progressBtn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.progressSection {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .videoLink {
   display: inline-flex;
   align-items: center;

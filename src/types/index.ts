@@ -60,6 +60,14 @@ export interface LogEntry {
 
 export type WorkoutLog = Record<string, LogEntry>;
 
+export interface HistoryEntry {
+  weight: string;
+  reps: string;
+  timestamp: string;
+}
+
+export type WorkoutLogV2 = Record<string, HistoryEntry[]>;
+
 export interface Draft {
   weight: string;
   reps: string;

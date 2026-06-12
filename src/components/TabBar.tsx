@@ -2,6 +2,7 @@ import styles from './TabBar.module.css';
 
 const tabs: [string, string][] = [
   ['plan', 'Workout Plan'],
+  ['progress', 'Progress'],
   ['prehab', 'Knee & Foot Care'],
   ['tips', 'Tips & Strategy'],
 ];

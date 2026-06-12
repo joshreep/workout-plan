@@ -1,0 +1,49 @@
+.heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 16px 0 12px;
+}
+
+.exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.exerciseBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exerciseName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ddd;
+}
+
+.recentList {
+  background: #1e1e28;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.recentRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 12px;
+  border-bottom: 1px solid #2a2a30;
+}
+
+.recentRow:last-child {
+  border-bottom: none;
+}
+
+.recentDate {
+  color: #777;
+}
+
+.recentValue {
+  color: #ccc;
+}

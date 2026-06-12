@@ -8,6 +8,7 @@ import DaySelector from './components/plan/DaySelector';
 import DayHeader from './components/plan/DayHeader';
 import ExerciseCard from './components/plan/ExerciseCard';
 import CardioNote from './components/plan/CardioNote';
+import ProgressTab from './components/progress/ProgressTab';
 import PrehabTab from './components/prehab/PrehabTab';
 import TipsTab from './components/tips/TipsTab';
 
@@ -33,6 +34,8 @@ export default function App() {
     progress,
     setKey,
     movKey,
+    getHistory,
+    getMovHistory,
   } = useWorkoutLog(activeDay, day);
 
   const handleDayChange = (dayIdx: number) => {
@@ -70,13 +73,29 @@ export default function App() {
                 logSet={logSet}
                 log={log}
                 movKey={movKey}
-                getLogEntry={(eIdx, sIdx) => log[setKey(eIdx, sIdx)]}
+                getLogEntry={(eIdx, sIdx) => {
+                  const entries = log[setKey(eIdx, sIdx)];
+                  if (!entries || entries.length === 0) return undefined;
+                  const last = entries[entries.length - 1];
+                  return { weight: last.weight, reps: last.reps, date: '' };
+                }}
+                getHistory={getHistory}
+                getMovHistory={getMovHistory}
               />
             ))}
           </div>
 
           <CardioNote day={day} />
         </div>
+      )}
+
+      {tab === 'progress' && (
+        <ProgressTab
+          activeDay={activeDay}
+          onDayChange={handleDayChange}
+          getHistory={getHistory}
+          getMovHistory={getMovHistory}
+        />
       )}
 
       {tab === 'prehab' && <PrehabTab />}
