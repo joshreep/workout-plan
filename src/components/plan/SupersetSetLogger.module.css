@@ -1,0 +1,36 @@
+.movements {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.movement {
+  background: #1a1a22;
+  border: 1px solid #2e2e3a;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.movHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.movLabel {
+  font-weight: 700;
+  font-size: 12px;
+  color: #ddd;
+}
+
+.movReps {
+  font-weight: 400;
+  color: #777;
+}
+
+.movInputs {
+  display: flex;
+  gap: 8px;
+}

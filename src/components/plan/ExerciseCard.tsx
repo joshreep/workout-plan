@@ -1,5 +1,6 @@
-import type { Day, Draft, Exercise, LogEntry } from '../../types';
+import type { Day, Draft, Exercise, LogEntry, WorkoutLog } from '../../types';
 import SetLogger from './SetLogger';
+import SupersetSetLogger from './SupersetSetLogger';
 import styles from './ExerciseCard.module.css';
 
 interface ExerciseCardProps {
@@ -12,7 +13,12 @@ interface ExerciseCardProps {
   lastEntry: (exIdx: number, setIdx: number) => LogEntry | null;
   getDraft: (exIdx: number, setIdx: number) => Draft;
   updateDraft: (exIdx: number, setIdx: number, field: keyof Draft, value: string) => void;
+  getMovDraft: (exIdx: number, setIdx: number, movIdx: number) => Draft;
+  updateMovDraft: (exIdx: number, setIdx: number, movIdx: number, field: keyof Draft, value: string) => void;
+  lastMovEntry: (exIdx: number, setIdx: number, movIdx: number) => LogEntry | null;
   logSet: (exIdx: number, setIdx: number) => void;
+  log: WorkoutLog;
+  movKey: (exIdx: number, setIdx: number, movIdx: number) => string;
   getLogEntry: (exIdx: number, setIdx: number) => LogEntry | undefined;
 }
 
@@ -26,7 +32,12 @@ export default function ExerciseCard({
   lastEntry,
   getDraft,
   updateDraft,
+  getMovDraft,
+  updateMovDraft,
+  lastMovEntry,
   logSet,
+  log,
+  movKey,
   getLogEntry,
 }: ExerciseCardProps) {
   const allDone = Array.from({ length: ex.sets }, (_, i) => isSetDone(exIdx, i)).every(Boolean);
@@ -65,20 +76,38 @@ export default function ExerciseCard({
           <div className={styles.logSection}>
             <div className={styles.logLabel}>Log Sets</div>
             <div className={styles.sets}>
-              {Array.from({ length: ex.sets }, (_, setIdx) => (
-                <SetLogger
-                  key={setIdx}
-                  setIdx={setIdx}
-                  done={isSetDone(exIdx, setIdx)}
-                  last={lastEntry(exIdx, setIdx)}
-                  draft={getDraft(exIdx, setIdx)}
-                  color={day.color}
-                  accent={day.accent}
-                  logEntry={getLogEntry(exIdx, setIdx)}
-                  onUpdateDraft={(field, value) => updateDraft(exIdx, setIdx, field, value)}
-                  onLogSet={() => logSet(exIdx, setIdx)}
-                />
-              ))}
+              {Array.from({ length: ex.sets }, (_, setIdx) =>
+                ex.movements ? (
+                  <SupersetSetLogger
+                    key={setIdx}
+                    setIdx={setIdx}
+                    movements={ex.movements}
+                    done={isSetDone(exIdx, setIdx)}
+                    drafts={ex.movements.map((_, mIdx) => getMovDraft(exIdx, setIdx, mIdx))}
+                    lasts={ex.movements.map((_, mIdx) => lastMovEntry(exIdx, setIdx, mIdx))}
+                    logEntries={ex.movements.map((_, mIdx) => log[movKey(exIdx, setIdx, mIdx)])}
+                    color={day.color}
+                    accent={day.accent}
+                    onUpdateMovDraft={(mIdx, field, value) =>
+                      updateMovDraft(exIdx, setIdx, mIdx, field, value)
+                    }
+                    onLogSet={() => logSet(exIdx, setIdx)}
+                  />
+                ) : (
+                  <SetLogger
+                    key={setIdx}
+                    setIdx={setIdx}
+                    done={isSetDone(exIdx, setIdx)}
+                    last={lastEntry(exIdx, setIdx)}
+                    draft={getDraft(exIdx, setIdx)}
+                    color={day.color}
+                    accent={day.accent}
+                    logEntry={getLogEntry(exIdx, setIdx)}
+                    onUpdateDraft={(field, value) => updateDraft(exIdx, setIdx, field, value)}
+                    onLogSet={() => logSet(exIdx, setIdx)}
+                  />
+                ),
+              )}
             </div>
           </div>
 

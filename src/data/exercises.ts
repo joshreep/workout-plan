@@ -207,6 +207,10 @@ export const days: Day[] = [
           'Do these back-to-back with no rest between. Curl first, then skull crusher. Saves ~5 min.',
         videoUrl:
           'https://www.youtube.com/results?search_query=skull+crushers+lying+tricep+extension+proper+form',
+        movements: [
+          { name: 'DB Curl', reps: '10\u201312' },
+          { name: 'Skull Crusher', reps: '10\u201312' },
+        ],
       },
     ],
   },
@@ -251,6 +255,10 @@ export const days: Day[] = [
           'Do dead bugs first (anti-extension), then woodchops (rotation) back-to-back with no rest between. Dead bug: lie on back, extend opposite arm and leg keeping lower back pressed to floor. Woodchop: pull cable high to low, keep hips square.',
         videoUrl:
           'https://www.youtube.com/results?search_query=dead+bug+exercise+proper+form+tutorial',
+        movements: [
+          { name: 'Dead Bug', reps: '10 each side' },
+          { name: 'Cable Woodchop', reps: '12 each side' },
+        ],
       },
       {
         name: 'Standing Calf Raise',

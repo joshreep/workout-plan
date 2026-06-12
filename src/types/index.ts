@@ -1,3 +1,8 @@
+export interface Movement {
+  name: string;
+  reps: string;
+}
+
 export interface Exercise {
   name: string;
   sets: number;
@@ -6,6 +11,7 @@ export interface Exercise {
   muscle: string;
   notes: string;
   videoUrl: string;
+  movements?: Movement[];
 }
 
 export interface Day {

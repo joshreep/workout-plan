@@ -24,11 +24,15 @@ export default function App() {
     lastEntry,
     getDraft,
     updateDraft,
+    getMovDraft,
+    updateMovDraft,
+    lastMovEntry,
     logSet,
     totalSets,
     doneSets,
     progress,
     setKey,
+    movKey,
   } = useWorkoutLog(activeDay, day);
 
   const handleDayChange = (dayIdx: number) => {
@@ -60,7 +64,12 @@ export default function App() {
                 lastEntry={lastEntry}
                 getDraft={getDraft}
                 updateDraft={updateDraft}
+                getMovDraft={getMovDraft}
+                updateMovDraft={updateMovDraft}
+                lastMovEntry={lastMovEntry}
                 logSet={logSet}
+                log={log}
+                movKey={movKey}
                 getLogEntry={(eIdx, sIdx) => log[setKey(eIdx, sIdx)]}
               />
             ))}
