@@ -268,6 +268,8 @@ export const days: Day[] = [
       {
         id: 'home-pull-ups',
         name: 'Pull-Ups',
+        progressMetric: 'e1rm',
+        isBodyweight: true,
         sets: 3,
         reps: '6–10',
         rest: '60 sec',
@@ -280,6 +282,8 @@ export const days: Day[] = [
       {
         id: 'chin-ups',
         name: 'Chin-Ups',
+        progressMetric: 'e1rm',
+        isBodyweight: true,
         sets: 3,
         reps: '8–10',
         rest: '60 sec',
@@ -292,6 +296,8 @@ export const days: Day[] = [
       {
         id: 'push-ups',
         name: 'Push-Ups',
+        progressMetric: 'e1rm',
+        isBodyweight: true,
         sets: 3,
         reps: '12–15',
         rest: '60 sec',
@@ -304,6 +310,8 @@ export const days: Day[] = [
       {
         id: 'pike-push-ups',
         name: 'Pike Push-Ups',
+        progressMetric: 'e1rm',
+        isBodyweight: true,
         sets: 3,
         reps: '10',
         rest: '60 sec',
@@ -316,6 +324,7 @@ export const days: Day[] = [
       {
         id: 'hollow-body-hold',
         name: 'Hollow Body Hold',
+        progressMetric: 'reps',
         sets: 3,
         reps: '20–30 sec hold',
         rest: '60 sec',
@@ -328,6 +337,7 @@ export const days: Day[] = [
       {
         id: 'single-leg-calf-raise',
         name: 'Single-Leg Calf Raise',
+        progressMetric: 'reps',
         sets: 3,
         reps: '15 each foot',
         rest: '60 sec',

@@ -1,4 +1,4 @@
-import type { HistoryEntry, WorkoutLog, WorkoutLogV2 } from '../types';
+import type { BodyweightEntry, HistoryEntry, UserProfile, WorkoutLog, WorkoutLogV2 } from '../types';
 
 const STORAGE_KEY_V1 = 'workout-log-v1';
 const STORAGE_KEY_V2 = 'workout-log-v2';
@@ -158,6 +158,37 @@ export function replaceLastEntry(
   const existing = log[key] ?? [];
   if (existing.length === 0) return appendEntry(log, key, entry);
   return { ...log, [key]: [...existing.slice(0, -1), entry] };
+}
+
+const STORAGE_KEY_PROFILE = 'workout-profile';
+const MAX_BODYWEIGHT_HISTORY = 104; // ~2 years of weekly entries
+
+export function loadProfile(): UserProfile {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PROFILE);
+    return raw ? JSON.parse(raw) : { bodyweight: null, bodyweightHistory: [] };
+  } catch {
+    return { bodyweight: null, bodyweightHistory: [] };
+  }
+}
+
+export function saveProfile(profile: UserProfile): void {
+  try {
+    localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+  } catch {
+    // Storage full or unavailable
+  }
+}
+
+export function appendBodyweightEntry(
+  profile: UserProfile,
+  entry: BodyweightEntry,
+): UserProfile {
+  const updated = [...profile.bodyweightHistory, entry];
+  if (updated.length > MAX_BODYWEIGHT_HISTORY) {
+    updated.splice(0, updated.length - MAX_BODYWEIGHT_HISTORY);
+  }
+  return { ...profile, bodyweight: entry.weight, bodyweightHistory: updated };
 }
 
 // Keep v1 exports for backwards compatibility with existing tests

@@ -6,7 +6,7 @@ interface ProgressChartProps {
   entries: AggregatedEntry[];
   color: string;
   label?: string;
-  metric?: 'volume' | 'e1rm';
+  metric?: 'volume' | 'e1rm' | 'reps';
 }
 
 export default function ProgressChart({ entries, color, label, metric = 'volume' }: ProgressChartProps) {
@@ -45,11 +45,17 @@ export default function ProgressChart({ entries, color, label, metric = 'volume'
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const formatValue = (v: number) =>
-    metric === 'e1rm' ? `~${v} lbs (e1RM)` : `${v.toLocaleString()} lbs total`;
+  const formatValue = (v: number) => {
+    if (metric === 'e1rm') return `~${v} lbs (e1RM)`;
+    if (metric === 'reps') return `${v} reps total`;
+    return `${v.toLocaleString()} lbs total`;
+  };
 
-  const formatAxisLabel = (v: number) =>
-    metric === 'volume' && v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v);
+  const formatAxisLabel = (v: number) => {
+    if (metric === 'volume' && v >= 1000) return `${(v / 1000).toFixed(1)}k`;
+    if (metric === 'reps') return `${v}r`;
+    return String(v);
+  };
 
   const activeEntry = activeIdx !== null ? entries[activeIdx] : null;
 

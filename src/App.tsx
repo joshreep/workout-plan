@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { days } from './data/exercises';
 import { useWorkoutLog } from './hooks/useWorkoutLog';
+import { useProfile } from './hooks/useProfile';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
 import SessionFlow from './components/plan/SessionFlow';
@@ -18,6 +19,7 @@ export default function App() {
   const [tab, setTab] = useState('plan');
 
   const day = days[activeDay];
+  const { profile, logBodyweight } = useProfile();
   const {
     storageReady,
     log,
@@ -37,7 +39,7 @@ export default function App() {
     movKey,
     getAggregatedHistory,
     getMovAggregatedHistory,
-  } = useWorkoutLog(day);
+  } = useWorkoutLog(day, profile.bodyweight);
 
   const handleDayChange = (dayIdx: number) => {
     setActiveDay(dayIdx);
@@ -97,6 +99,9 @@ export default function App() {
           onDayChange={handleDayChange}
           getAggregatedHistory={getAggregatedHistory}
           getMovAggregatedHistory={getMovAggregatedHistory}
+          bodyweight={profile.bodyweight}
+          bodyweightHistory={profile.bodyweightHistory}
+          onLogBodyweight={logBodyweight}
         />
       )}
 

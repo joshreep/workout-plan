@@ -13,12 +13,23 @@ export interface Exercise {
   notes: string;
   videoUrl: string;
   movements?: Movement[];
-  progressMetric?: 'volume' | 'e1rm';
+  progressMetric?: 'volume' | 'e1rm' | 'reps';
+  isBodyweight?: boolean;
 }
 
 export interface AggregatedEntry {
   timestamp: string;
   value: number;
+}
+
+export interface BodyweightEntry {
+  weight: number;
+  timestamp: string;
+}
+
+export interface UserProfile {
+  bodyweight: number | null;
+  bodyweightHistory: BodyweightEntry[];
 }
 
 export interface Day {

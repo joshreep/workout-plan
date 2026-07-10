@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { days } from '../../data/exercises';
-import type { AggregatedEntry, Day } from '../../types';
+import type { AggregatedEntry, BodyweightEntry, Day } from '../../types';
 import DaySelector from '../plan/DaySelector';
 import ProgressChart from '../plan/ProgressChart';
 import styles from './ProgressTab.module.css';
@@ -9,6 +10,9 @@ interface ProgressTabProps {
   onDayChange: (dayIdx: number) => void;
   getAggregatedHistory: (exIdx: number) => AggregatedEntry[];
   getMovAggregatedHistory: (exIdx: number, movIdx: number) => AggregatedEntry[];
+  bodyweight: number | null;
+  bodyweightHistory: BodyweightEntry[];
+  onLogBodyweight: (weight: number) => void;
 }
 
 export default function ProgressTab({
@@ -16,11 +20,20 @@ export default function ProgressTab({
   onDayChange,
   getAggregatedHistory,
   getMovAggregatedHistory,
+  bodyweight,
+  bodyweightHistory,
+  onLogBodyweight,
 }: ProgressTabProps) {
   const day: Day = days[activeDay];
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '20px 16px' }}>
+      <BodyweightCard
+        bodyweight={bodyweight}
+        history={bodyweightHistory}
+        onLog={onLogBodyweight}
+      />
+
       <DaySelector activeDay={activeDay} onDayChange={onDayChange} />
 
       <h2 className={styles.heading} style={{ color: day.accent }}>
@@ -59,12 +72,82 @@ export default function ProgressTab({
   );
 }
 
-function RecentEntries({ entries, metric }: { entries: AggregatedEntry[]; metric: 'volume' | 'e1rm' }) {
+function BodyweightCard({
+  bodyweight,
+  history,
+  onLog,
+}: {
+  bodyweight: number | null;
+  history: BodyweightEntry[];
+  onLog: (weight: number) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState('');
+
+  const handleSubmit = () => {
+    const val = parseFloat(draft);
+    if (val > 0) {
+      onLog(val);
+      setDraft('');
+      setEditing(false);
+    }
+  };
+
+  const chartEntries: AggregatedEntry[] = history.map((e) => ({
+    timestamp: e.timestamp,
+    value: e.weight,
+  }));
+
+  return (
+    <div className={styles.bwCard}>
+      <div className={styles.bwHeader}>
+        <span className={styles.bwLabel}>Body Weight</span>
+        {!editing && (
+          <button className={styles.bwEditBtn} onClick={() => { setDraft(bodyweight ? String(bodyweight) : ''); setEditing(true); }}>
+            {bodyweight ? `${bodyweight} lbs` : 'Set weight'} ✏️
+          </button>
+        )}
+        {editing && (
+          <div className={styles.bwInputRow}>
+            <input
+              className={styles.bwInput}
+              type="number"
+              inputMode="decimal"
+              placeholder="lbs"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(); if (e.key === 'Escape') setEditing(false); }}
+              autoFocus
+            />
+            <button className={styles.bwSaveBtn} onClick={handleSubmit}>Log</button>
+            <button className={styles.bwCancelBtn} onClick={() => setEditing(false)}>✕</button>
+          </div>
+        )}
+      </div>
+      {chartEntries.length >= 2 && (
+        <ProgressChart
+          entries={chartEntries}
+          color="#888"
+          metric="volume"
+          label=""
+        />
+      )}
+      {chartEntries.length > 0 && chartEntries.length < 2 && (
+        <div className={styles.bwHint}>Log again next week to see your trend</div>
+      )}
+    </div>
+  );
+}
+
+function RecentEntries({ entries, metric }: { entries: AggregatedEntry[]; metric: 'volume' | 'e1rm' | 'reps' }) {
   const recent = entries.slice(-5).reverse();
   if (recent.length === 0) return null;
 
-  const formatValue = (v: number) =>
-    metric === 'e1rm' ? `~${v} lbs (e1RM)` : `${v.toLocaleString()} lbs total`;
+  const formatValue = (v: number) => {
+    if (metric === 'e1rm') return `~${v} lbs (e1RM)`;
+    if (metric === 'reps') return `${v} reps total`;
+    return `${v.toLocaleString()} lbs total`;
+  };
 
   return (
     <div className={styles.recentList}>

@@ -20,7 +20,9 @@ function epley(weight: number, reps: number): number {
 
 function aggregateEntries(
   entries: HistoryEntry[],
-  metric: 'volume' | 'e1rm',
+  metric: 'volume' | 'e1rm' | 'reps',
+  bodyweight?: number | null,
+  isBodyweight?: boolean,
 ): AggregatedEntry[] {
   // Group entries by calendar day
   const sessions = new Map<string, HistoryEntry[]>();
@@ -33,22 +35,26 @@ function aggregateEntries(
 
   const result: AggregatedEntry[] = [];
   for (const group of sessions.values()) {
-    // Use the timestamp of the first entry in the session as the session timestamp
     const timestamp = group[0].timestamp;
     let value: number;
-    if (metric === 'e1rm') {
+
+    if (metric === 'reps') {
+      value = group.reduce((sum, e) => sum + (parseInt(e.reps) || 0), 0);
+    } else if (metric === 'e1rm') {
       value = Math.max(
         ...group.map((e) => {
-          const w = parseFloat(e.weight) || 0;
+          const addedWeight = parseFloat(e.weight) || 0;
+          const load = isBodyweight ? (bodyweight ?? 0) + addedWeight : addedWeight;
           const r = parseInt(e.reps) || 0;
-          return epley(w, r);
+          return epley(load, r);
         }),
       );
     } else {
       value = group.reduce((sum, e) => {
-        const w = parseFloat(e.weight) || 0;
+        const addedWeight = parseFloat(e.weight) || 0;
+        const load = isBodyweight ? (bodyweight ?? 0) + addedWeight : addedWeight;
         const r = parseInt(e.reps) || 0;
-        return sum + w * r;
+        return sum + load * r;
       }, 0);
     }
     result.push({ timestamp, value });
@@ -57,7 +63,7 @@ function aggregateEntries(
   return result.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 }
 
-export function useWorkoutLog(day: Day) {
+export function useWorkoutLog(day: Day, bodyweight?: number | null) {
   const [completedSets, setCompletedSets] = useState<Record<string, boolean>>({});
   const [editingSets, setEditingSets] = useState<Record<string, boolean>>({});
   const [log, setLog] = useState<WorkoutLogV2>({});
@@ -247,14 +253,13 @@ export function useWorkoutLog(day: Day) {
     (exIdx: number): AggregatedEntry[] => {
       const ex = day.exercises[exIdx];
       const metric = ex.progressMetric ?? 'volume';
-      // Collect all set entries for this exercise across all set indices
       const allEntries: HistoryEntry[] = [];
       for (let s = 0; s < ex.sets; s++) {
         allEntries.push(...(log[setKey(exIdx, s)] ?? []));
       }
-      return aggregateEntries(allEntries, metric);
+      return aggregateEntries(allEntries, metric, bodyweight, ex.isBodyweight);
     },
-    [log, setKey, day.exercises],
+    [log, setKey, day.exercises, bodyweight],
   );
 
   const getMovAggregatedHistory = useCallback(
@@ -265,9 +270,9 @@ export function useWorkoutLog(day: Day) {
       for (let s = 0; s < ex.sets; s++) {
         allEntries.push(...(log[movKey(exIdx, s, movIdx)] ?? []));
       }
-      return aggregateEntries(allEntries, metric);
+      return aggregateEntries(allEntries, metric, bodyweight, ex.isBodyweight);
     },
-    [log, movKey, day.exercises],
+    [log, movKey, day.exercises, bodyweight],
   );
 
   const totalSets = day.exercises.reduce((acc, ex) => acc + ex.sets, 0);
