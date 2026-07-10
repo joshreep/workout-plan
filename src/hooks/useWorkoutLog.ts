@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { appendEntry, loadHistory, saveHistory } from '../lib/storage';
+import { appendEntry, replaceLastEntry, loadHistory, saveHistory } from '../lib/storage';
 import type { AggregatedEntry, Day, Draft, HistoryEntry, LogEntry, WorkoutLogV2 } from '../types';
 
 function historyToLogEntry(entry: HistoryEntry): LogEntry {
@@ -59,6 +59,7 @@ function aggregateEntries(
 
 export function useWorkoutLog(day: Day) {
   const [completedSets, setCompletedSets] = useState<Record<string, boolean>>({});
+  const [editingSets, setEditingSets] = useState<Record<string, boolean>>({});
   const [log, setLog] = useState<WorkoutLogV2>({});
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [storageReady, setStorageReady] = useState(false);
@@ -68,9 +69,10 @@ export function useWorkoutLog(day: Day) {
     setStorageReady(true);
   }, []);
 
-  // Reset completed sets when the day changes
+  // Reset completed and editing sets when the day changes
   useEffect(() => {
     setCompletedSets({});
+    setEditingSets({});
   }, [day.id]);
 
   const setKey = useCallback(
@@ -87,6 +89,38 @@ export function useWorkoutLog(day: Day) {
   const isSetDone = useCallback(
     (exIdx: number, setIdx: number) => !!completedSets[setKey(exIdx, setIdx)],
     [completedSets, setKey],
+  );
+
+  const isSetEditing = useCallback(
+    (exIdx: number, setIdx: number) => !!editingSets[setKey(exIdx, setIdx)],
+    [editingSets, setKey],
+  );
+
+  const uneditSet = useCallback(
+    (exIdx: number, setIdx: number) => {
+      const k = setKey(exIdx, setIdx);
+      const ex = day.exercises[exIdx];
+      // Pre-fill draft with the current last logged values so the user can tweak them
+      if (ex.movements) {
+        ex.movements.forEach((_, mIdx) => {
+          const mk = movKey(exIdx, setIdx, mIdx);
+          const entries = log[mk];
+          if (entries && entries.length > 0) {
+            const last = entries[entries.length - 1];
+            setDrafts((prev) => ({ ...prev, [mk]: { weight: last.weight, reps: last.reps } }));
+          }
+        });
+      } else {
+        const entries = log[k];
+        if (entries && entries.length > 0) {
+          const last = entries[entries.length - 1];
+          setDrafts((prev) => ({ ...prev, [k]: { weight: last.weight, reps: last.reps } }));
+        }
+      }
+      setCompletedSets((prev) => ({ ...prev, [k]: false }));
+      setEditingSets((prev) => ({ ...prev, [k]: true }));
+    },
+    [day.exercises, log, setKey, movKey],
   );
 
   const lastEntry = useCallback(
@@ -151,7 +185,10 @@ export function useWorkoutLog(day: Day) {
   const logSet = useCallback(
     (exIdx: number, setIdx: number) => {
       const ex = day.exercises[exIdx];
+      const sk = setKey(exIdx, setIdx);
+      const isEditing = !!editingSets[sk];
       const timestamp = new Date().toISOString();
+      const persist = isEditing ? replaceLastEntry : appendEntry;
       if (ex.movements) {
         const anyFilled = ex.movements.some((_, mIdx) => {
           const d = drafts[movKey(exIdx, setIdx, mIdx)];
@@ -167,11 +204,12 @@ export function useWorkoutLog(day: Day) {
             reps: draft.reps || '',
             timestamp,
           };
-          newLog = appendEntry(newLog, k, entry);
+          newLog = persist(newLog, k, entry);
         });
         setLog(newLog);
         saveHistory(newLog);
-        setCompletedSets((prev) => ({ ...prev, [setKey(exIdx, setIdx)]: true }));
+        setCompletedSets((prev) => ({ ...prev, [sk]: true }));
+        setEditingSets((prev) => ({ ...prev, [sk]: false }));
       } else {
         const k = setKey(exIdx, setIdx);
         const draft = drafts[k];
@@ -181,13 +219,14 @@ export function useWorkoutLog(day: Day) {
           reps: draft.reps || '',
           timestamp,
         };
-        const newLog = appendEntry(log, k, entry);
+        const newLog = persist(log, k, entry);
         setLog(newLog);
         saveHistory(newLog);
         setCompletedSets((prev) => ({ ...prev, [k]: true }));
+        setEditingSets((prev) => ({ ...prev, [k]: false }));
       }
     },
-    [drafts, log, day.exercises, setKey, movKey],
+    [drafts, editingSets, log, day.exercises, setKey, movKey],
   );
 
   const getHistory = useCallback(
@@ -248,6 +287,8 @@ export function useWorkoutLog(day: Day) {
     log,
     completedSets,
     isSetDone,
+    isSetEditing,
+    uneditSet,
     lastEntry,
     getDraft,
     updateDraft,

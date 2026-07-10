@@ -11,6 +11,7 @@ interface SetLoggerProps {
   logEntry: LogEntry | undefined;
   onUpdateDraft: (field: keyof Draft, value: string) => void;
   onLogSet: () => void;
+  onEdit: () => void;
 }
 
 export default function SetLogger({
@@ -23,6 +24,7 @@ export default function SetLogger({
   logEntry,
   onUpdateDraft,
   onLogSet,
+  onEdit,
 }: SetLoggerProps) {
   return (
     <div
@@ -85,11 +87,16 @@ export default function SetLogger({
       )}
 
       {done && logEntry && (
-        <div className={styles.completed} style={{ color: accent }}>
-          {logEntry.weight ? `${logEntry.weight} lbs` : ''}
-          {logEntry.weight && logEntry.reps ? ' \u00d7 ' : ''}
-          {logEntry.reps ? `${logEntry.reps} reps` : ''}
-          <span className={styles.loggedLabel}>logged &#10003;</span>
+        <div className={styles.completedRow}>
+          <div className={styles.completed} style={{ color: accent }}>
+            {logEntry.weight ? `${logEntry.weight} lbs` : ''}
+            {logEntry.weight && logEntry.reps ? ' \u00d7 ' : ''}
+            {logEntry.reps ? `${logEntry.reps} reps` : ''}
+            <span className={styles.loggedLabel}>logged &#10003;</span>
+          </div>
+          <button className={styles.editBtn} onClick={onEdit} title="Edit this set">
+            &#9998;
+          </button>
         </div>
       )}
     </div>

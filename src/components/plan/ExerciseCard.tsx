@@ -19,6 +19,7 @@ interface ExerciseCardProps {
   updateMovDraft: (exIdx: number, setIdx: number, movIdx: number, field: keyof Draft, value: string) => void;
   lastMovEntry: (exIdx: number, setIdx: number, movIdx: number) => LogEntry | null;
   logSet: (exIdx: number, setIdx: number) => void;
+  uneditSet: (exIdx: number, setIdx: number) => void;
   log: WorkoutLogV2;
   movKey: (exIdx: number, setIdx: number, movIdx: number) => string;
   getLogEntry: (exIdx: number, setIdx: number) => LogEntry | undefined;
@@ -40,6 +41,7 @@ export default function ExerciseCard({
   updateMovDraft,
   lastMovEntry,
   logSet,
+  uneditSet,
   log,
   movKey,
   getLogEntry,
@@ -104,6 +106,7 @@ export default function ExerciseCard({
                       updateMovDraft(exIdx, setIdx, mIdx, field, value)
                     }
                     onLogSet={() => logSet(exIdx, setIdx)}
+                    onEdit={() => uneditSet(exIdx, setIdx)}
                   />
                 ) : (
                   <SetLogger
@@ -117,6 +120,7 @@ export default function ExerciseCard({
                     logEntry={getLogEntry(exIdx, setIdx)}
                     onUpdateDraft={(field, value) => updateDraft(exIdx, setIdx, field, value)}
                     onLogSet={() => logSet(exIdx, setIdx)}
+                    onEdit={() => uneditSet(exIdx, setIdx)}
                   />
                 ),
               )}

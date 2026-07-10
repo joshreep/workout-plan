@@ -150,6 +150,16 @@ export function appendEntry(
   return { ...log, [key]: updated };
 }
 
+export function replaceLastEntry(
+  log: WorkoutLogV2,
+  key: string,
+  entry: HistoryEntry,
+): WorkoutLogV2 {
+  const existing = log[key] ?? [];
+  if (existing.length === 0) return appendEntry(log, key, entry);
+  return { ...log, [key]: [...existing.slice(0, -1), entry] };
+}
+
 // Keep v1 exports for backwards compatibility with existing tests
 export function loadLog(): WorkoutLog {
   return loadV1();

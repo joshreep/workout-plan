@@ -13,6 +13,7 @@ interface SupersetSetLoggerProps {
   accent: string;
   onUpdateMovDraft: (movIdx: number, field: keyof Draft, value: string) => void;
   onLogSet: () => void;
+  onEdit: () => void;
 }
 
 export default function SupersetSetLogger({
@@ -26,6 +27,7 @@ export default function SupersetSetLogger({
   accent,
   onUpdateMovDraft,
   onLogSet,
+  onEdit,
 }: SupersetSetLoggerProps) {
   return (
     <div
@@ -46,6 +48,11 @@ export default function SupersetSetLogger({
             style={{ background: color, boxShadow: `0 2px 12px ${color}66` }}
           >
             &#10003;
+          </button>
+        )}
+        {done && (
+          <button className={setStyles.editBtn} onClick={onEdit} title="Edit this set">
+            &#9998;
           </button>
         )}
       </div>

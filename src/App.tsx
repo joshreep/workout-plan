@@ -29,6 +29,7 @@ export default function App() {
     updateMovDraft,
     lastMovEntry,
     logSet,
+    uneditSet,
     totalSets,
     doneSets,
     progress,
@@ -71,6 +72,7 @@ export default function App() {
                 updateMovDraft={updateMovDraft}
                 lastMovEntry={lastMovEntry}
                 logSet={logSet}
+                uneditSet={uneditSet}
                 log={log}
                 movKey={movKey}
                 getLogEntry={(eIdx, sIdx) => {
