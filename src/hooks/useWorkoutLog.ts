@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { appendEntry, loadHistory, saveHistory } from '../lib/storage';
-import type { Day, Draft, HistoryEntry, LogEntry, WorkoutLogV2 } from '../types';
+import type { AggregatedEntry, Day, Draft, HistoryEntry, LogEntry, WorkoutLogV2 } from '../types';
 
 function historyToLogEntry(entry: HistoryEntry): LogEntry {
   const d = new Date(entry.timestamp);
@@ -8,7 +8,56 @@ function historyToLogEntry(entry: HistoryEntry): LogEntry {
   return { weight: entry.weight, reps: entry.reps, date };
 }
 
-export function useWorkoutLog(activeDay: number, day: Day) {
+function sessionKey(timestamp: string): string {
+  const d = new Date(timestamp);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function epley(weight: number, reps: number): number {
+  if (reps === 1) return weight;
+  return Math.round(weight * (1 + reps / 30));
+}
+
+function aggregateEntries(
+  entries: HistoryEntry[],
+  metric: 'volume' | 'e1rm',
+): AggregatedEntry[] {
+  // Group entries by calendar day
+  const sessions = new Map<string, HistoryEntry[]>();
+  for (const e of entries) {
+    const key = sessionKey(e.timestamp);
+    const group = sessions.get(key) ?? [];
+    group.push(e);
+    sessions.set(key, group);
+  }
+
+  const result: AggregatedEntry[] = [];
+  for (const group of sessions.values()) {
+    // Use the timestamp of the first entry in the session as the session timestamp
+    const timestamp = group[0].timestamp;
+    let value: number;
+    if (metric === 'e1rm') {
+      value = Math.max(
+        ...group.map((e) => {
+          const w = parseFloat(e.weight) || 0;
+          const r = parseInt(e.reps) || 0;
+          return epley(w, r);
+        }),
+      );
+    } else {
+      value = group.reduce((sum, e) => {
+        const w = parseFloat(e.weight) || 0;
+        const r = parseInt(e.reps) || 0;
+        return sum + w * r;
+      }, 0);
+    }
+    result.push({ timestamp, value });
+  }
+
+  return result.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+}
+
+export function useWorkoutLog(day: Day) {
   const [completedSets, setCompletedSets] = useState<Record<string, boolean>>({});
   const [log, setLog] = useState<WorkoutLogV2>({});
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
@@ -19,14 +68,20 @@ export function useWorkoutLog(activeDay: number, day: Day) {
     setStorageReady(true);
   }, []);
 
+  // Reset completed sets when the day changes
+  useEffect(() => {
+    setCompletedSets({});
+  }, [day.id]);
+
   const setKey = useCallback(
-    (exIdx: number, setIdx: number) => `${activeDay}-${exIdx}-${setIdx}`,
-    [activeDay],
+    (exIdx: number, setIdx: number) => `${day.exercises[exIdx].id}-${setIdx}`,
+    [day.exercises],
   );
 
   const movKey = useCallback(
-    (exIdx: number, setIdx: number, movIdx: number) => `${activeDay}-${exIdx}-${setIdx}-${movIdx}`,
-    [activeDay],
+    (exIdx: number, setIdx: number, movIdx: number) =>
+      `${day.exercises[exIdx].id}-${setIdx}-${movIdx}`,
+    [day.exercises],
   );
 
   const isSetDone = useCallback(
@@ -83,6 +138,7 @@ export function useWorkoutLog(activeDay: number, day: Day) {
       if (movEntries && movEntries.length > 0) {
         return historyToLogEntry(movEntries[movEntries.length - 1]);
       }
+      // Fallback to flat set key for data logged before per-movement tracking
       const flatEntries = log[setKey(exIdx, setIdx)];
       if (flatEntries && flatEntries.length > 0) {
         return historyToLogEntry(flatEntries[flatEntries.length - 1]);
@@ -148,6 +204,33 @@ export function useWorkoutLog(activeDay: number, day: Day) {
     [log, movKey],
   );
 
+  const getAggregatedHistory = useCallback(
+    (exIdx: number): AggregatedEntry[] => {
+      const ex = day.exercises[exIdx];
+      const metric = ex.progressMetric ?? 'volume';
+      // Collect all set entries for this exercise across all set indices
+      const allEntries: HistoryEntry[] = [];
+      for (let s = 0; s < ex.sets; s++) {
+        allEntries.push(...(log[setKey(exIdx, s)] ?? []));
+      }
+      return aggregateEntries(allEntries, metric);
+    },
+    [log, setKey, day.exercises],
+  );
+
+  const getMovAggregatedHistory = useCallback(
+    (exIdx: number, movIdx: number): AggregatedEntry[] => {
+      const ex = day.exercises[exIdx];
+      const metric = ex.progressMetric ?? 'volume';
+      const allEntries: HistoryEntry[] = [];
+      for (let s = 0; s < ex.sets; s++) {
+        allEntries.push(...(log[movKey(exIdx, s, movIdx)] ?? []));
+      }
+      return aggregateEntries(allEntries, metric);
+    },
+    [log, movKey, day.exercises],
+  );
+
   const totalSets = day.exercises.reduce((acc, ex) => acc + ex.sets, 0);
   const doneSets = day.exercises.reduce(
     (acc, ex, exIdx) =>
@@ -179,5 +262,7 @@ export function useWorkoutLog(activeDay: number, day: Day) {
     movKey,
     getHistory,
     getMovHistory,
+    getAggregatedHistory,
+    getMovAggregatedHistory,
   };
 }

@@ -34,9 +34,9 @@ export default function App() {
     progress,
     setKey,
     movKey,
-    getHistory,
-    getMovHistory,
-  } = useWorkoutLog(activeDay, day);
+    getAggregatedHistory,
+    getMovAggregatedHistory,
+  } = useWorkoutLog(day);
 
   const handleDayChange = (dayIdx: number) => {
     setActiveDay(dayIdx);
@@ -79,8 +79,8 @@ export default function App() {
                   const last = entries[entries.length - 1];
                   return { weight: last.weight, reps: last.reps, date: '' };
                 }}
-                getHistory={getHistory}
-                getMovHistory={getMovHistory}
+                getAggregatedHistory={getAggregatedHistory}
+                getMovAggregatedHistory={getMovAggregatedHistory}
               />
             ))}
           </div>
@@ -93,8 +93,8 @@ export default function App() {
         <ProgressTab
           activeDay={activeDay}
           onDayChange={handleDayChange}
-          getHistory={getHistory}
-          getMovHistory={getMovHistory}
+          getAggregatedHistory={getAggregatedHistory}
+          getMovAggregatedHistory={getMovAggregatedHistory}
         />
       )}
 

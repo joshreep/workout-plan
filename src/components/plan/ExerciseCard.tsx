@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Day, Draft, Exercise, HistoryEntry, LogEntry, WorkoutLogV2 } from '../../types';
+import type { AggregatedEntry, Day, Draft, Exercise, LogEntry, WorkoutLogV2 } from '../../types';
 import ProgressChart from './ProgressChart';
 import SetLogger from './SetLogger';
 import SupersetSetLogger from './SupersetSetLogger';
@@ -22,8 +22,8 @@ interface ExerciseCardProps {
   log: WorkoutLogV2;
   movKey: (exIdx: number, setIdx: number, movIdx: number) => string;
   getLogEntry: (exIdx: number, setIdx: number) => LogEntry | undefined;
-  getHistory: (exIdx: number, setIdx?: number) => HistoryEntry[];
-  getMovHistory: (exIdx: number, setIdx: number, movIdx: number) => HistoryEntry[];
+  getAggregatedHistory: (exIdx: number) => AggregatedEntry[];
+  getMovAggregatedHistory: (exIdx: number, movIdx: number) => AggregatedEntry[];
 }
 
 export default function ExerciseCard({
@@ -43,8 +43,8 @@ export default function ExerciseCard({
   log,
   movKey,
   getLogEntry,
-  getHistory,
-  getMovHistory,
+  getAggregatedHistory,
+  getMovAggregatedHistory,
 }: ExerciseCardProps) {
   const [showProgress, setShowProgress] = useState(false);
   const allDone = Array.from({ length: ex.sets }, (_, i) => isSetDone(exIdx, i)).every(Boolean);
@@ -137,15 +137,17 @@ export default function ExerciseCard({
                 ex.movements.map((mov, mIdx) => (
                   <ProgressChart
                     key={mIdx}
-                    entries={getMovHistory(exIdx, 0, mIdx)}
+                    entries={getMovAggregatedHistory(exIdx, mIdx)}
                     color={day.color}
                     label={mov.name}
+                    metric={ex.progressMetric ?? 'volume'}
                   />
                 ))
               ) : (
                 <ProgressChart
-                  entries={getHistory(exIdx, 0)}
+                  entries={getAggregatedHistory(exIdx)}
                   color={day.color}
+                  metric={ex.progressMetric ?? 'volume'}
                 />
               )}
             </div>

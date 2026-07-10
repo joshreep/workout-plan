@@ -4,6 +4,7 @@ export interface Movement {
 }
 
 export interface Exercise {
+  id: string;
   name: string;
   sets: number;
   reps: string;
@@ -12,6 +13,12 @@ export interface Exercise {
   notes: string;
   videoUrl: string;
   movements?: Movement[];
+  progressMetric?: 'volume' | 'e1rm';
+}
+
+export interface AggregatedEntry {
+  timestamp: string;
+  value: number;
 }
 
 export interface Day {

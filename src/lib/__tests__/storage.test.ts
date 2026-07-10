@@ -38,57 +38,63 @@ describe('storage', () => {
     });
   });
 
-  describe('loadHistory (v2)', () => {
-    it('returns empty object when no v1 or v2 data exists', () => {
+  describe('loadHistory (v3)', () => {
+    it('returns empty object when no data exists', () => {
       expect(loadHistory()).toEqual({});
     });
 
-    it('returns v2 data when it exists', () => {
-      const data = { '0-0-0': [{ weight: '135', reps: '8', timestamp: '2026-06-01T10:00:00.000Z' }] };
-      localStorage.setItem('workout-log-v2', JSON.stringify(data));
+    it('returns v3 data when it exists', () => {
+      const data = { 'bench-press-0': [{ weight: '135', reps: '8', timestamp: '2026-06-01T10:00:00.000Z' }] };
+      localStorage.setItem('workout-log-v3', JSON.stringify(data));
       expect(loadHistory()).toEqual(data);
     });
 
-    it('migrates v1 data to v2 on first load', () => {
-      const v1 = { '0-0-0': { weight: '135', reps: '8', date: 'Mar 10' } };
-      localStorage.setItem('workout-log-v1', JSON.stringify(v1));
-
-      const result = loadHistory();
-      expect(result['0-0-0']).toHaveLength(1);
-      expect(result['0-0-0'][0].weight).toBe('135');
-      expect(result['0-0-0'][0].reps).toBe('8');
-      expect(result['0-0-0'][0].timestamp).toBeDefined();
-    });
-
-    it('does not re-migrate once v2 exists', () => {
-      const v1 = { '0-0-0': { weight: '100', reps: '5', date: 'Mar 9' } };
-      localStorage.setItem('workout-log-v1', JSON.stringify(v1));
-
-      const v2 = { '0-0-0': [{ weight: '200', reps: '10', timestamp: '2026-06-10T10:00:00.000Z' }] };
+    it('migrates v2 data to v3 using exercise id map', () => {
+      // Day 0, ex 0 = bench-press in the V2_TO_V3 map
+      const v2 = { '0-0-0': [{ weight: '135', reps: '8', timestamp: '2026-03-10T10:00:00.000Z' }] };
       localStorage.setItem('workout-log-v2', JSON.stringify(v2));
 
       const result = loadHistory();
-      expect(result['0-0-0'][0].weight).toBe('200');
+      expect(result['bench-press-0']).toHaveLength(1);
+      expect(result['bench-press-0'][0].weight).toBe('135');
+      expect(result['bench-press-0'][0].reps).toBe('8');
+      expect(result['bench-press-0'][0].timestamp).toBeDefined();
     });
 
-    it('returns empty object on corrupted v2 data', () => {
-      localStorage.setItem('workout-log-v2', 'not-json');
+    it('drops v2 keys for removed exercises during migration', () => {
+      // Day 3 ex 0 (incline db press) and ex 1 (seated cable row) were removed
+      const v2 = {
+        '3-0-0': [{ weight: '80', reps: '10', timestamp: '2026-03-10T10:00:00.000Z' }],
+        '3-1-0': [{ weight: '100', reps: '10', timestamp: '2026-03-10T10:00:00.000Z' }],
+      };
+      localStorage.setItem('workout-log-v2', JSON.stringify(v2));
+
+      const result = loadHistory();
+      expect(Object.keys(result)).toHaveLength(0);
+    });
+
+    it('does not re-migrate once v3 exists', () => {
+      const v2 = { '0-0-0': [{ weight: '100', reps: '5', timestamp: '2026-03-09T10:00:00.000Z' }] };
+      localStorage.setItem('workout-log-v2', JSON.stringify(v2));
+
+      const v3 = { 'bench-press-0': [{ weight: '200', reps: '10', timestamp: '2026-06-10T10:00:00.000Z' }] };
+      localStorage.setItem('workout-log-v3', JSON.stringify(v3));
+
+      const result = loadHistory();
+      expect(result['bench-press-0'][0].weight).toBe('200');
+    });
+
+    it('returns empty object on corrupted v3 data', () => {
+      localStorage.setItem('workout-log-v3', 'not-json');
       expect(loadHistory()).toEqual({});
-    });
-
-    it('preserves v1 data after migration', () => {
-      const v1 = { '0-0-0': { weight: '135', reps: '8', date: 'Mar 10' } };
-      localStorage.setItem('workout-log-v1', JSON.stringify(v1));
-      loadHistory();
-      expect(JSON.parse(localStorage.getItem('workout-log-v1')!)).toEqual(v1);
     });
   });
 
   describe('saveHistory', () => {
-    it('persists to workout-log-v2 key', () => {
-      const data = { '0-0-0': [{ weight: '135', reps: '8', timestamp: '2026-06-01T10:00:00.000Z' }] };
+    it('persists to workout-log-v3 key', () => {
+      const data = { 'bench-press-0': [{ weight: '135', reps: '8', timestamp: '2026-06-01T10:00:00.000Z' }] };
       saveHistory(data);
-      expect(JSON.parse(localStorage.getItem('workout-log-v2')!)).toEqual(data);
+      expect(JSON.parse(localStorage.getItem('workout-log-v3')!)).toEqual(data);
     });
   });
 

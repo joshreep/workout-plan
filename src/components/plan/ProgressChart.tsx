@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import type { HistoryEntry } from '../../types';
+import type { AggregatedEntry } from '../../types';
 import styles from './ProgressChart.module.css';
 
 interface ProgressChartProps {
-  entries: HistoryEntry[];
+  entries: AggregatedEntry[];
   color: string;
   label?: string;
+  metric?: 'volume' | 'e1rm';
 }
 
-export default function ProgressChart({ entries, color, label }: ProgressChartProps) {
+export default function ProgressChart({ entries, color, label, metric = 'volume' }: ProgressChartProps) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   if (entries.length < 2) {
@@ -20,12 +21,12 @@ export default function ProgressChart({ entries, color, label }: ProgressChartPr
     );
   }
 
-  const weights = entries.map((e) => parseFloat(e.weight) || 0);
-  const minW = Math.min(...weights);
-  const maxW = Math.max(...weights);
-  const range = maxW - minW || 1;
+  const values = entries.map((e) => e.value);
+  const minV = Math.min(...values);
+  const maxV = Math.max(...values);
+  const range = maxV - minV || 1;
 
-  const padding = { top: 20, right: 16, bottom: 28, left: 40 };
+  const padding = { top: 20, right: 16, bottom: 28, left: 48 };
   const width = 300;
   const height = 100;
   const chartW = width - padding.left - padding.right;
@@ -33,7 +34,7 @@ export default function ProgressChart({ entries, color, label }: ProgressChartPr
 
   const points = entries.map((_, i) => {
     const x = padding.left + (i / (entries.length - 1)) * chartW;
-    const y = padding.top + chartH - ((weights[i] - minW) / range) * chartH;
+    const y = padding.top + chartH - ((values[i] - minV) / range) * chartH;
     return { x, y };
   });
 
@@ -43,6 +44,12 @@ export default function ProgressChart({ entries, color, label }: ProgressChartPr
     const d = new Date(ts);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  const formatValue = (v: number) =>
+    metric === 'e1rm' ? `~${v} lbs (e1RM)` : `${v.toLocaleString()} lbs total`;
+
+  const formatAxisLabel = (v: number) =>
+    metric === 'volume' && v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v);
 
   const activeEntry = activeIdx !== null ? entries[activeIdx] : null;
 
@@ -57,10 +64,10 @@ export default function ProgressChart({ entries, color, label }: ProgressChartPr
       >
         {/* Y-axis labels */}
         <text x={padding.left - 4} y={padding.top + 4} className={styles.axisLabel} textAnchor="end">
-          {maxW}
+          {formatAxisLabel(maxV)}
         </text>
         <text x={padding.left - 4} y={padding.top + chartH + 4} className={styles.axisLabel} textAnchor="end">
-          {minW}
+          {formatAxisLabel(minV)}
         </text>
 
         {/* X-axis labels (first and last) */}
@@ -100,10 +107,7 @@ export default function ProgressChart({ entries, color, label }: ProgressChartPr
 
       {activeEntry && (
         <div className={styles.tooltip} style={{ borderColor: `${color}66` }}>
-          {formatDate(activeEntry.timestamp)} &mdash;{' '}
-          {activeEntry.weight ? `${activeEntry.weight} lbs` : ''}
-          {activeEntry.weight && activeEntry.reps ? ' × ' : ''}
-          {activeEntry.reps ? `${activeEntry.reps} reps` : ''}
+          {formatDate(activeEntry.timestamp)} &mdash; {formatValue(activeEntry.value)}
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { days } from '../../data/exercises';
-import type { Day, HistoryEntry } from '../../types';
+import type { AggregatedEntry, Day } from '../../types';
 import DaySelector from '../plan/DaySelector';
 import ProgressChart from '../plan/ProgressChart';
 import styles from './ProgressTab.module.css';
@@ -7,15 +7,15 @@ import styles from './ProgressTab.module.css';
 interface ProgressTabProps {
   activeDay: number;
   onDayChange: (dayIdx: number) => void;
-  getHistory: (exIdx: number, setIdx?: number) => HistoryEntry[];
-  getMovHistory: (exIdx: number, setIdx: number, movIdx: number) => HistoryEntry[];
+  getAggregatedHistory: (exIdx: number) => AggregatedEntry[];
+  getMovAggregatedHistory: (exIdx: number, movIdx: number) => AggregatedEntry[];
 }
 
 export default function ProgressTab({
   activeDay,
   onDayChange,
-  getHistory,
-  getMovHistory,
+  getAggregatedHistory,
+  getMovAggregatedHistory,
 }: ProgressTabProps) {
   const day: Day = days[activeDay];
 
@@ -35,21 +35,23 @@ export default function ProgressTab({
               ex.movements.map((mov, mIdx) => (
                 <ProgressChart
                   key={mIdx}
-                  entries={getMovHistory(exIdx, 0, mIdx)}
+                  entries={getMovAggregatedHistory(exIdx, mIdx)}
                   color={day.color}
                   label={mov.name}
+                  metric={ex.progressMetric ?? 'volume'}
                 />
               ))
             ) : (
               <ProgressChart
-                entries={getHistory(exIdx, 0)}
+                entries={getAggregatedHistory(exIdx)}
                 color={day.color}
+                metric={ex.progressMetric ?? 'volume'}
               />
             )}
-            <RecentEntries entries={ex.movements
-              ? getMovHistory(exIdx, 0, 0)
-              : getHistory(exIdx, 0)
-            } />
+            <RecentEntries
+              entries={getAggregatedHistory(exIdx)}
+              metric={ex.progressMetric ?? 'volume'}
+            />
           </div>
         ))}
       </div>
@@ -57,9 +59,12 @@ export default function ProgressTab({
   );
 }
 
-function RecentEntries({ entries }: { entries: HistoryEntry[] }) {
+function RecentEntries({ entries, metric }: { entries: AggregatedEntry[]; metric: 'volume' | 'e1rm' }) {
   const recent = entries.slice(-5).reverse();
   if (recent.length === 0) return null;
+
+  const formatValue = (v: number) =>
+    metric === 'e1rm' ? `~${v} lbs (e1RM)` : `${v.toLocaleString()} lbs total`;
 
   return (
     <div className={styles.recentList}>
@@ -69,11 +74,7 @@ function RecentEntries({ entries }: { entries: HistoryEntry[] }) {
         return (
           <div key={i} className={styles.recentRow}>
             <span className={styles.recentDate}>{date}</span>
-            <span className={styles.recentValue}>
-              {entry.weight ? `${entry.weight} lbs` : ''}
-              {entry.weight && entry.reps ? ' × ' : ''}
-              {entry.reps ? `${entry.reps} reps` : ''}
-            </span>
+            <span className={styles.recentValue}>{formatValue(entry.value)}</span>
           </div>
         );
       })}
