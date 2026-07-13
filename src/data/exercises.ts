@@ -35,16 +35,6 @@ export const days: Day[] = [
           'https://www.youtube.com/results?search_query=bulgarian+split+squat+proper+form+tutorial',
       },
       {
-        id: 'leg-press',
-        name: 'Leg Press',
-        sets: 3,
-        reps: '10–12',
-        rest: '75 sec',
-        muscle: 'Quads / Glutes',
-        notes: "Higher foot placement = more glutes. Don't fully lock out knees at the top.",
-        videoUrl: 'https://www.youtube.com/results?search_query=leg+press+proper+form+tutorial',
-      },
-      {
         id: 'seated-leg-curl',
         name: 'Seated Leg Curl',
         sets: 3,
@@ -161,6 +151,16 @@ export const days: Day[] = [
         notes: 'Hinge at hips, slight bend in knees. Feel the hamstring stretch at the bottom.',
         videoUrl:
           'https://www.youtube.com/results?search_query=romanian+deadlift+proper+form+tutorial',
+      },
+      {
+        id: 'leg-press',
+        name: 'Leg Press',
+        sets: 3,
+        reps: '10–12',
+        rest: '75 sec',
+        muscle: 'Quads / Glutes',
+        notes: "Higher foot placement = more glutes. Don't fully lock out knees at the top.",
+        videoUrl: 'https://www.youtube.com/results?search_query=leg+press+proper+form+tutorial',
       },
       {
         id: 'dead-bug-woodchop',
