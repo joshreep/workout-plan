@@ -202,18 +202,6 @@ export const days: Day[] = [
         videoUrl: 'https://www.youtube.com/results?search_query=barbell+row+proper+form+tutorial',
       },
       {
-        id: 'lat-pulldown',
-        name: 'Lat Pulldown',
-        sets: 3,
-        reps: '10–12',
-        rest: '75 sec',
-        muscle: 'Lats',
-        notes:
-          "Lean back slightly, pull bar to upper chest. Don't use momentum — control the return.",
-        videoUrl:
-          'https://www.youtube.com/results?search_query=lat+pulldown+proper+form+tutorial',
-      },
-      {
         id: 'pull-ups',
         name: 'Pull-Ups or Assisted Pull-Ups',
         sets: 3,
