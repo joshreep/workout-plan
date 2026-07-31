@@ -46,25 +46,32 @@ export default function ProgressTab({
             <div className={styles.exerciseName}>{ex.name}</div>
             {ex.movements ? (
               ex.movements.map((mov, mIdx) => (
-                <ProgressChart
-                  key={mIdx}
-                  entries={getMovAggregatedHistory(exIdx, mIdx)}
-                  color={day.color}
-                  label={mov.name}
-                  metric={ex.progressMetric ?? 'volume'}
-                />
+                <div key={mIdx}>
+                  <ProgressChart
+                    entries={getMovAggregatedHistory(exIdx, mIdx)}
+                    color={day.color}
+                    label={mov.name}
+                    metric={mov.progressMetric ?? ex.progressMetric ?? 'volume'}
+                  />
+                  <RecentEntries
+                    entries={getMovAggregatedHistory(exIdx, mIdx)}
+                    metric={mov.progressMetric ?? ex.progressMetric ?? 'volume'}
+                  />
+                </div>
               ))
             ) : (
-              <ProgressChart
-                entries={getAggregatedHistory(exIdx)}
-                color={day.color}
-                metric={ex.progressMetric ?? 'volume'}
-              />
+              <>
+                <ProgressChart
+                  entries={getAggregatedHistory(exIdx)}
+                  color={day.color}
+                  metric={ex.progressMetric ?? 'volume'}
+                />
+                <RecentEntries
+                  entries={getAggregatedHistory(exIdx)}
+                  metric={ex.progressMetric ?? 'volume'}
+                />
+              </>
             )}
-            <RecentEntries
-              entries={getAggregatedHistory(exIdx)}
-              metric={ex.progressMetric ?? 'volume'}
-            />
           </div>
         ))}
       </div>

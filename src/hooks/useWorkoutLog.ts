@@ -265,12 +265,14 @@ export function useWorkoutLog(day: Day, bodyweight?: number | null) {
   const getMovAggregatedHistory = useCallback(
     (exIdx: number, movIdx: number): AggregatedEntry[] => {
       const ex = day.exercises[exIdx];
-      const metric = ex.progressMetric ?? 'volume';
+      const mov = ex.movements?.[movIdx];
+      const metric = mov?.progressMetric ?? ex.progressMetric ?? 'volume';
+      const isBodyweight = mov?.isBodyweight ?? ex.isBodyweight;
       const allEntries: HistoryEntry[] = [];
       for (let s = 0; s < ex.sets; s++) {
         allEntries.push(...(log[movKey(exIdx, s, movIdx)] ?? []));
       }
-      return aggregateEntries(allEntries, metric, bodyweight, ex.isBodyweight);
+      return aggregateEntries(allEntries, metric, bodyweight, isBodyweight);
     },
     [log, movKey, day.exercises, bodyweight],
   );

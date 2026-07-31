@@ -1,6 +1,8 @@
 export interface Movement {
   name: string;
   reps: string;
+  progressMetric?: 'volume' | 'e1rm' | 'reps';
+  isBodyweight?: boolean;
 }
 
 export interface Exercise {

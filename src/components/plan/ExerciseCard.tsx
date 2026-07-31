@@ -144,7 +144,7 @@ export default function ExerciseCard({
                     entries={getMovAggregatedHistory(exIdx, mIdx)}
                     color={day.color}
                     label={mov.name}
-                    metric={ex.progressMetric ?? 'volume'}
+                    metric={mov.progressMetric ?? ex.progressMetric ?? 'volume'}
                   />
                 ))
               ) : (

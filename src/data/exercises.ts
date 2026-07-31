@@ -142,6 +142,8 @@ export const days: Day[] = [
       {
         id: 'pull-ups',
         name: 'Pull-Ups or Assisted Pull-Ups',
+        progressMetric: 'e1rm',
+        isBodyweight: true,
         sets: 3,
         reps: '6–10',
         rest: '75 sec',
@@ -232,8 +234,8 @@ export const days: Day[] = [
         videoUrl:
           'https://www.youtube.com/results?search_query=dead+bug+exercise+proper+form+tutorial',
         movements: [
-          { name: 'Dead Bug', reps: '10 each side' },
-          { name: 'Cable Woodchop', reps: '12 each side' },
+          { name: 'Dead Bug', reps: '10 each side', progressMetric: 'reps' },
+          { name: 'Cable Woodchop', reps: '12 each side', progressMetric: 'volume' },
         ],
       },
     ],
