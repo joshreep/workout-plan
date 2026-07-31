@@ -121,12 +121,70 @@ export const days: Day[] = [
   {
     id: 2,
     label: 'WED',
+    name: 'UPPER B',
+    subtitle: 'Back · Biceps · Rear Delts',
+    color: '#3A7DE8',
+    accent: '#5c9fff',
+    cardio:
+      'Elliptical: 5–10 min. Legs got hit hard on Monday, so this upper day gives them an extra day of recovery before Thursday.',
+    exercises: [
+      {
+        id: 'barbell-row',
+        name: 'Barbell Row',
+        progressMetric: 'e1rm',
+        sets: 4,
+        reps: '6–8',
+        rest: '90 sec',
+        muscle: 'Mid Back',
+        notes: 'Hinge to ~45°, drive elbows back. Pull to your belly button, not chest.',
+        videoUrl: 'https://www.youtube.com/results?search_query=barbell+row+proper+form+tutorial',
+      },
+      {
+        id: 'pull-ups',
+        name: 'Pull-Ups or Assisted Pull-Ups',
+        sets: 3,
+        reps: '6–10',
+        rest: '75 sec',
+        muscle: 'Lats / Biceps',
+        notes:
+          'Dead hang at bottom, pull until chin clears bar. Use the assisted machine if needed.',
+        videoUrl:
+          'https://www.youtube.com/results?search_query=pull+up+proper+form+tutorial+jeff+nippard',
+      },
+      {
+        id: 'face-pulls',
+        name: 'Face Pulls',
+        sets: 3,
+        reps: '15–20',
+        rest: '60 sec',
+        muscle: 'Rear Delts',
+        notes:
+          "Pull to eye level, flare elbows high. Critical for shoulder health — don't skip this.",
+        videoUrl:
+          'https://www.youtube.com/results?search_query=face+pulls+proper+form+athlean+x',
+      },
+      {
+        id: 'db-curl',
+        name: 'Dumbbell Curl',
+        sets: 3,
+        reps: '10–12',
+        rest: '60 sec',
+        muscle: 'Biceps',
+        notes: 'Control the descent, avoid swinging. Squeeze at the top.',
+        videoUrl:
+          'https://www.youtube.com/results?search_query=dumbbell+curl+proper+form+tutorial',
+      },
+    ],
+  },
+  {
+    id: 3,
+    label: 'THU',
     name: 'LOWER B',
     subtitle: 'Deadlift · Posterior Chain · Core',
     color: '#E8A83A',
     accent: '#ffc95c',
     cardio:
-      'Skip elliptical today — legs are already cooked. 5–10 min easy treadmill walk to flush lactic acid. Tomorrow is Upper B so your legs get a full day off.',
+      'Skip elliptical today — legs are already cooked. 5–10 min easy treadmill walk to flush lactic acid. Tomorrow is a rest day so your legs get to fully recover.',
     exercises: [
       {
         id: 'deadlift',
@@ -181,69 +239,6 @@ export const days: Day[] = [
     ],
   },
   {
-    id: 3,
-    label: 'THU',
-    name: 'UPPER B',
-    subtitle: 'Back · Biceps · Rear Delts',
-    color: '#3A7DE8',
-    accent: '#5c9fff',
-    cardio:
-      'Elliptical: 5–10 min. Thursday is a good day to push slightly harder on cardio — Friday is a rest day so your body has 48+ hrs to recover.',
-    exercises: [
-      {
-        id: 'barbell-row',
-        name: 'Barbell Row',
-        progressMetric: 'e1rm',
-        sets: 4,
-        reps: '6–8',
-        rest: '90 sec',
-        muscle: 'Mid Back',
-        notes: 'Hinge to ~45°, drive elbows back. Pull to your belly button, not chest.',
-        videoUrl: 'https://www.youtube.com/results?search_query=barbell+row+proper+form+tutorial',
-      },
-      {
-        id: 'pull-ups',
-        name: 'Pull-Ups or Assisted Pull-Ups',
-        sets: 3,
-        reps: '6–10',
-        rest: '75 sec',
-        muscle: 'Lats / Biceps',
-        notes:
-          'Dead hang at bottom, pull until chin clears bar. Use the assisted machine if needed.',
-        videoUrl:
-          'https://www.youtube.com/results?search_query=pull+up+proper+form+tutorial+jeff+nippard',
-      },
-      {
-        id: 'face-pulls',
-        name: 'Face Pulls',
-        sets: 3,
-        reps: '15–20',
-        rest: '60 sec',
-        muscle: 'Rear Delts',
-        notes:
-          "Pull to eye level, flare elbows high. Critical for shoulder health — don't skip this.",
-        videoUrl:
-          'https://www.youtube.com/results?search_query=face+pulls+proper+form+athlean+x',
-      },
-      {
-        id: 'curl-skull-crusher',
-        name: 'Superset: DB Curl + Skull Crusher',
-        sets: 3,
-        reps: '10–12 each',
-        rest: '75 sec',
-        muscle: 'Biceps + Triceps',
-        notes:
-          'Do these back-to-back with no rest between. Curl first, then skull crusher. Saves ~5 min.',
-        videoUrl:
-          'https://www.youtube.com/results?search_query=skull+crushers+lying+tricep+extension+proper+form',
-        movements: [
-          { name: 'DB Curl', reps: '10–12' },
-          { name: 'Skull Crusher', reps: '10–12' },
-        ],
-      },
-    ],
-  },
-  {
     id: 4,
     label: 'SAT',
     name: 'HOME',
@@ -263,7 +258,7 @@ export const days: Day[] = [
         rest: '60 sec',
         muscle: 'Lats / Biceps',
         notes:
-          'Doorway bar. Dead hang at the bottom, pull chin over bar. Quality reps — not to failure. Back is already hit hard on Thursday so keep this moderate.',
+          'Doorway bar. Dead hang at the bottom, pull chin over bar. Quality reps — not to failure. Back is already hit hard on Wednesday so keep this moderate.',
         videoUrl:
           'https://www.youtube.com/results?search_query=pull+up+proper+form+tutorial+jeff+nippard',
       },
@@ -368,15 +363,15 @@ export const tips: Tip[] = [
   {
     icon: '🏃',
     title: 'Cardio Strategy',
-    body: 'Post-workout elliptical is ideal — glycogen is depleted so your body taps fat stores faster. On lower days (Mon and Wed), swap for an easy treadmill walk instead.',
+    body: 'Post-workout elliptical is ideal — glycogen is depleted so your body taps fat stores faster. On lower days (Mon and Thu), swap for an easy treadmill walk instead.',
   },
 ];
 
 export const schedule: ScheduleRow[] = [
   { day: 'Monday', plan: 'Lower A — Squat · Split Squat · Posterior Chain', color: '#3ACA6E', rest: false },
   { day: 'Tuesday', plan: 'Upper A — Chest · Shoulders · Triceps', color: '#E8533A', rest: false },
-  { day: 'Wednesday', plan: 'Lower B — Deadlift · Posterior Chain · Core', color: '#E8A83A', rest: false },
-  { day: 'Thursday', plan: 'Upper B — Back · Biceps · Rear Delts', color: '#3A7DE8', rest: false },
+  { day: 'Wednesday', plan: 'Upper B — Back · Biceps · Rear Delts', color: '#3A7DE8', rest: false },
+  { day: 'Thursday', plan: 'Lower B — Deadlift · Posterior Chain · Core', color: '#E8A83A', rest: false },
   { day: 'Friday', plan: 'Rest Day', color: '#333', rest: true },
   { day: 'Saturday', plan: 'Home — Bodyweight Push · Pull · Core', color: '#A63AE8', rest: false },
   { day: 'Sunday', plan: 'Rest Day', color: '#333', rest: true },
